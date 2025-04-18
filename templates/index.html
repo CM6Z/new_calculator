@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ config['TITLE'] }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PL高级计算器</h1>
+        </header>
+        
+        <div class="calculator">
+            <div class="tabs">
+                <button class="tab-button active" data-operation="basic">基本运算</button>
+                <button class="tab-button" data-operation="function">高级函数</button>
+                <button class="tab-button" data-operation="equation">方程求解</button>
+            </div>
+            
+            <div class="result-display">
+                {% if expression is not none %}
+                    <div class="expression">{{ expression }}</div>
+                {% endif %}
+                
+                {% if result is not none %}
+                    <div class="result">结果：<span {% if 'error' in result|lower %}class="error"{% endif %}>{{ result }}</span></div>
+                {% endif %}
+            </div>
+            
+            <div class="calculator-form">
+                <!-- 基本运算表单 -->
+                <form id="basic-form" method="post" class="operation-form {% if last_operation != 'basic' and last_operation is not none %}hidden{% endif %}">
+                    <input type="hidden" name="operation" value="basic">
+                    
+                    <div class="form-group">
+                        <label for="a">数字 A:</label>
+                        <input type="number" step="any" name="a" id="a" value="{{ a }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="basic_op">运算:</label>
+                        <select name="basic_op" id="basic_op">
+                            <option value="add">加法 (+)</option>
+                            <option value="subtract">减法 (-)</option>
+                            <option value="multiply">乘法 (×)</option>
+                            <option value="divide">除法 (÷)</option>
+                            <option value="power">幂 (^)</option>
+                            <option value="root">开方 (√)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="b">数字 B:</label>
+                        <input type="number" step="any" name="b" id="b" value="{{ b }}" required>
+                    </div>
+                    
+                    <button type="submit" class="calculate-btn">计算</button>
+                </form>
+                
+                <!-- 高级函数表单 -->
+                <form id="function-form" method="post" class="operation-form {% if last_operation != 'function' %}hidden{% endif %}">
+                    <input type="hidden" name="operation" value="function">
+                    
+                    <div class="form-group">
+                        <label for="function">函数:</label>
+                        <select name="function" id="function">
+                            <option value="sin">正弦 (sin)</option>
+                            <option value="cos">余弦 (cos)</option>
+                            <option value="tan">正切 (tan)</option>
+                            <option value="log10">对数 (log₁₀)</option>
+                            <option value="ln">自然对数 (ln)</option>
+                            <option value="sqrt">平方根 (√)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="x">X 值:</label>
+                        <input type="number" step="any" name="x" id="x" value="{{ a }}" required>
+                    </div>
+                    
+                    <button type="submit" class="calculate-btn">计算</button>
+                </form>
+                
+                <!-- 方程求解表单 -->
+                <form id="equation-form" method="post" class="operation-form {% if last_operation != 'equation' %}hidden{% endif %}">
+                    <input type="hidden" name="operation" value="equation">
+                    
+                    <h3>一元二次方程: ax² + bx + c = 0</h3>
+                    
+                    <div class="form-group">
+                        <label for="eq_a">a 值:</label>
+                        <input type="number" step="any" name="eq_a" id="eq_a" value="{{ a }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eq_b">b 值:</label>
+                        <input type="number" step="any" name="eq_b" id="eq_b" value="{{ b }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eq_c">c 值:</label>
+                        <input type="number" step="any" name="eq_c" id="eq_c" value="0" required>
+                    </div>
+                    
+                    <button type="submit" class="calculate-btn">求解方程</button>
+                </form>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 PL高级计算器</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 切换不同计算模式的选项卡
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                // 隐藏所有表单
+                document.querySelectorAll('.operation-form').forEach(form => form.classList.add('hidden'));
+                
+                // 激活当前选项卡和表单
+                this.classList.add('active');
+                const operation = this.dataset.operation;
+                document.getElementById(`${operation}-form`).classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
